@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI-Powered Sustainable Nutrition Analyzer</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <!-- ============================================
+       LOGIN SCREEN
+       ============================================ -->
+  <div id="login-screen" class="login-screen hidden">
+    <div class="login-container">
+      <div class="login-header">
+        <div class="logo">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+          </svg>
+        </div>
+        <h1>NutriAI</h1>
+        <p>AI-Powered Sustainable Nutrition</p>
+      </div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" id="login-name" class="form-input" placeholder="Enter your name" required>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" id="login-email" class="form-input" placeholder="Enter your email" required>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Get Started</button>
+      </form>
+      
+      <button id="demo-btn" class="btn btn-secondary demo-btn">Try Demo</button>
+    </div>
+  </div>
+
+  <!-- ============================================
+       PROFILE SETUP SCREEN
+       ============================================ -->
+  <div id="profile-screen" class="profile-screen hidden">
+    <div class="screen-header">
+      <h2>Complete Your Profile</h2>
+      <p>Help us personalize your nutrition plan</p>
+    </div>
+
+    <!-- Live Calculations Panel -->
+    <div class="calculations-panel">
+      <h3>Your Health Metrics</h3>
+      <div class="calc-grid">
+        <div class="calc-item">
+          <div id="bmi-value" class="calc-value">--</div>
+          <div class="calc-label">BMI</div>
+          <span id="bmi-category" class="bmi-badge">--</span>
+        </div>
+        <div class="calc-item">
+          <div id="bmr-value" class="calc-value">--</div>
+          <div class="calc-label">BMR (kcal)</div>
+        </div>
+        <div class="calc-item">
+          <div id="tdee-value" class="calc-value">--</div>
+          <div class="calc-label">TDEE (kcal)</div>
+        </div>
+        <div class="calc-item">
+          <div id="target-value" class="calc-value">--</div>
+          <div class="calc-label">Daily Target</div>
+        </div>
+      </div>
+      <div class="macro-targets">
+        <div class="macro-item">
+          <div id="target-protein" class="macro-value">--</div>
+          <div class="macro-name">Protein</div>
+        </div>
+        <div class="macro-item">
+          <div id="target-carbs" class="macro-value">--</div>
+          <div class="macro-name">Carbs</div>
+        </div>
+        <div class="macro-item">
+          <div id="target-fat" class="macro-value">--</div>
+          <div class="macro-name">Fat</div>
+        </div>
+        <div class="macro-item">
+          <div id="target-fiber" class="macro-value">--</div>
+          <div class="macro-name">Fiber</div>
+        </div>
+      </div>
+    </div>
+
+    <form id="profile-form" class="profile-form">
+      <!-- Personal Information -->
+      <div class="form-section">
+        <h3>Personal Information</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" id="name" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone</label>
+            <input type="tel" id="phone" class="form-input">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" id="email" class="form-input" required>
+          </div>
+        </div>
+      </div>
+
+      <!-- Body Metrics -->
+      <div class="form-section">
+        <h3>Body Metrics</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Age (years)</label>
+            <input type="number" id="age" class="form-input" min="10" max="120" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Height (cm)</label>
+            <input type="number" id="height" class="form-input" min="50" max="300" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Weight (kg)</label>
+            <input type="number" id="weight" class="form-input" min="20" max="300" step="0.1" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Sex</label>
+            <select id="sex" class="form-input" required>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Fitness Goal</label>
+            <select id="goal" class="form-input" required>
+              <option value="lose_weight">Lose Weight</option>
+              <option value="maintain">Maintain Weight</option>
+              <option value="gain_weight">Gain Weight</option>
+              <option value="build_muscle">Build Muscle</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Activity Level</label>
+            <select id="activity-level" class="form-input" required>
+              <option value="sedentary">Sedentary</option>
+              <option value="light">Light Active</option>
+              <option value="moderate" selected>Moderate Active</option>
+              <option value="active">Very Active</option>
+              <option value="very_active">Extra Active</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Diet & Health -->
+      <div class="form-section">
+        <h3>Diet & Health Preferences</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Diet Preference</label>
+            <select id="diet-preference" class="form-input">
+              <option value="none">No Preference</option>
+              <option value="vegetarian">Vegetarian</option>
+              <option value="vegan">Vegan</option>
+              <option value="keto">Keto</option>
+              <option value="paleo">Paleo</option>
+              <option value="mediterranean">Mediterranean</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Health Conditions</label>
+            <input type="text" id="health-conditions" class="form-input" placeholder="e.g., diabetes, hypertension">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Food Allergies</label>
+            <input type="text" id="allergies" class="form-input" placeholder="e.g., peanuts, shellfish">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Continue to Meal Planner</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ============================================
+       MEAL PLANNER SCREEN
+       ============================================ -->
+  <div id="meal-planner-screen" class="meal-planner-screen hidden">
+    <div class="screen-header">
+      <h2>Plan Your Meals</h2>
+      <p>Add ingredients using text, voice, or photo</p>
+    </div>
+
+    <div class="meal-slots">
+      <!-- Breakfast -->
+      <div id="breakfast-slot" class="meal-slot">
+        <div class="meal-slot-header">
+          <div class="meal-slot-title">
+            <div class="meal-icon" style="background: #fef3c7;">🌅</div>
+            <h3>Breakfast</h3>
+          </div>
+        </div>
+        <div class="meal-prompt">What are you having for breakfast?</div>
+          <select class="servings-select">
+            <option value="1">1 serving</option>
+            <option value="2">2 servings</option>
+            <option value="3">3 servings</option>
+            <option value="4">4 servings</option>
+            <option value="5">5 servings</option>
+            <option value="6">6 servings</option>
+          </select>
+        </div>
+        <div class="ingredient-input-area">
+          <input type="text" class="ingredient-text-input" placeholder="Type ingredient and press Enter...">
+          <div class="input-methods">
+            <button class="input-btn add-ingredient-btn">+ Add</button>
+            <button class="input-btn voice-btn">🎤 Voice</button>
+            <button class="input-btn upload-btn">📷 Photo</button>
+            <input type="file" class="image-input" accept="image/*">
+          </div>
+          <div class="image-preview hidden" id="breakfast-image-preview"></div>
+        </div>
+        <div id="breakfast-ingredients" class="ingredients-list">
+          <span class="text-muted" style="padding: 0.5rem;">No ingredients added</span>
+        </div>
+      </div>
+
+      <!-- Lunch -->
+      <div id="lunch-slot" class="meal-slot">
+        <div class="meal-slot-header">
+          <div class="meal-slot-title">
+            <div class="meal-icon" style="background: #dbeafe;">☀️</div>
+            <h3>Lunch</h3>
+          </div>
+        </div>
+        <div class="meal-prompt">What would you like for lunch?</div>
+          <select class="servings-select">
+            <option value="1">1 serving</option>
+            <option value="2">2 servings</option>
+            <option value="3">3 servings</option>
+            <option value="4">4 servings</option>
+            <option value="5">5 servings</option>
+            <option value="6">6 servings</option>
+          </select>
+        </div>
+        <div class="ingredient-input-area">
+          <input type="text" class="ingredient-text-input" placeholder="Type ingredient and press Enter...">
+          <div class="input-methods">
+            <button class="input-btn add-ingredient-btn">+ Add</button>
+            <button class="input-btn voice-btn">🎤 Voice</button>
+            <button class="input-btn upload-btn">📷 Photo</button>
+            <input type="file" class="image-input" accept="image/*">
+          </div>
+          <div class="image-preview hidden" id="lunch-image-preview"></div>
+        </div>
+        <div id="lunch-ingredients" class="ingredients-list">
+          <span class="text-muted" style="padding: 0.5rem;">No ingredients added</span>
+        </div>
+      </div>
+
+      <!-- Dinner -->
+      <div id="dinner-slot" class="meal-slot">
+        <div class="meal-slot-header">
+          <div class="meal-slot-title">
+            <div class="meal-icon" style="background: #e0e7ff;">🌙</div>
+            <h3>Dinner</h3>
+          </div>
+          <select class="servings-select">
+            <option value="1">1 serving</option>
+            <option value="2">2 servings</option>
+            <option value="3">3 servings</option>
+            <option value="4">4 servings</option>
+            <option value="5">5 servings</option>
+            <option value="6">6 servings</option>
+          </select>
+        </div>
+        <div class="ingredient-input-area">
+          <input type="text" class="ingredient-text-input" placeholder="Type ingredient and press Enter...">
+          <div class="input-methods">
+            <button class="input-btn add-ingredient-btn">+ Add</button>
+            <button class="input-btn voice-btn">🎤 Voice</button>
+            <button class="input-btn upload-btn">📷 Photo</button>
+            <input type="file" class="image-input" accept="image/*">
+          </div>
+          <div class="image-preview hidden" id="dinner-image-preview"></div>
+        </div>
+        <div id="dinner-ingredients" class="ingredients-list">
+          <span class="text-muted" style="padding: 0.5rem;">No ingredients added</span>
+        </div>
+      </div>
+
+      <!-- Snack -->
+      <div id="snack-slot" class="meal-slot">
+        <div class="meal-slot-header">
+          <div class="meal-slot-title">
+            <div class="meal-icon" style="background: #fce7f3;">🥜</div>
+            <h3>Snack</h3>
+          </div>
+        </div>
+        <div class="meal-prompt">Time for a snack! What are you having?</div>
+          <select class="servings-select">
+            <option value="1">1 serving</option>
+            <option value="2">2 servings</option>
+            <option value="3">3 servings</option>
+            <option value="4">4 servings</option>
+            <option value="5">5 servings</option>
+            <option value="6">6 servings</option>
+          </select>
+        </div>
+        <div class="ingredient-input-area">
+          <input type="text" class="ingredient-text-input" placeholder="Type ingredient and press Enter...">
+          <div class="input-methods">
+            <button class="input-btn add-ingredient-btn">+ Add</button>
+            <button class="input-btn voice-btn">🎤 Voice</button>
+            <button class="input-btn upload-btn">📷 Photo</button>
+            <input type="file" class="image-input" accept="image/*">
+          </div>
+          <div class="image-preview hidden" id="snack-image-preview"></div>
+        </div>
+        <div id="snack-ingredients" class="ingredients-list">
+          <span class="text-muted" style="padding: 0.5rem;">No ingredients added</span>
+        </div>
+      </div>
+
+      <!-- Dessert -->
+      <div id="dessert-slot" class="meal-slot">
+        <div class="meal-slot-header">
+          <div class="meal-slot-title">
+            <div class="meal-icon" style="background: #f3e8ff;">🍰</div>
+            <h3>Dessert</h3>
+          </div>
+        </div>
+        <div class="meal-prompt">Any dessert planned?</div>
+          <select class="servings-select">
+            <option value="1">1 serving</option>
+            <option value="2">2 servings</option>
+            <option value="3">3 servings</option>
+            <option value="4">4 servings</option>
+            <option value="5">5 servings</option>
+            <option value="6">6 servings</option>
+          </select>
+        </div>
+        <div class="ingredient-input-area">
+          <input type="text" class="ingredient-text-input" placeholder="Type ingredient and press Enter...">
+          <div class="input-methods">
+            <button class="input-btn add-ingredient-btn">+ Add</button>
+            <button class="input-btn voice-btn">🎤 Voice</button>
+            <button class="input-btn upload-btn">📷 Photo</button>
+            <input type="file" class="image-input" accept="image/*">
+          </div>
+          <div class="image-preview hidden" id="dessert-image-preview"></div>
+        </div>
+        <div id="dessert-ingredients" class="ingredients-list">
+          <span class="text-muted" style="padding: 0.5rem;">No ingredients added</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="analyze-actions">
+      <button id="analyze-meals-btn" class="btn btn-primary analyze-btn">
+        🔍 Analyze My Nutrition
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================
+       ANALYSIS SCREEN
+       ============================================ -->
+  <div id="analysis-screen" class="analysis-screen hidden">
+    <div class="screen-header">
+      <h2>AI Nutrition Analysis</h2>
+      <p>Personalized insights and recommendations</p>
+    </div>
+
+    <!-- Analysis Tabs -->
+    <div class="analysis-tabs">
+      <button class="analysis-tab active" data-tab="chat">💬 Chat</button>
+      <button class="analysis-tab" data-tab="recipes">🍽️ Recipes</button>
+      <button class="analysis-tab" data-tab="stats">📊 Stats</button>
+      <button class="analysis-tab" data-tab="history">📅 History</button>
+    </div>
+
+    <!-- Chat Panel -->
+    <div id="chat-panel" class="tab-panel">
+      <div class="chat-container">
+        <div id="chat-messages" class="chat-messages">
+          <div class="chat-message assistant">
+            <div class="message-content">
+              Hello! I'm your AI nutrition assistant. I can help you with meal planning, recipe suggestions, and nutrition advice. What would you like to know?
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-area">
+          <input type="text" id="chat-input" class="chat-input" placeholder="Ask about nutrition, recipes, or sustainability...">
+          <button id="send-chat-btn" class="btn btn-primary">Send</button>
+        </div>
+        <div class="quick-replies">
+          <button class="quick-reply">Suggest a healthy breakfast</button>
+          <button class="quick-reply">How can I reduce my carbon footprint?</button>
+          <button class="quick-reply">High protein meal ideas</button>
+          <button class="quick-reply">Is my diet balanced?</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recipes Panel -->
+    <div id="recipes-panel" class="tab-panel hidden">
+      <div id="recipes-container" class="recipes-container">
+        <div class="loading">AI is generating personalized recipes...</div>
+      </div>
+      <div class="eco-score-section">
+        <h4>🌱 Sustainability Score</h4>
+        <div id="eco-score-display"></div>
+      </div>
+    </div>
+
+    <!-- Stats Panel -->
+    <div id="stats-panel" class="tab-panel hidden">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h4>Nutrient Progress</h4>
+          <div id="ring-chart"></div>
+        </div>
+        <div class="stat-card">
+          <h4>Daily Targets</h4>
+          <div id="bar-chart"></div>
+        </div>
+      </div>
+      <div class="bmi-bmr-cards">
+        <div class="health-card">
+          <h5>BMI</h5>
+          <div id="stats-bmi" class="health-value">--</div>
+          <div id="stats-bmi-category" class="health-subtitle">--</div>
+        </div>
+        <div class="health-card">
+          <h5>BMR</h5>
+          <div id="stats-bmr" class="health-value">--</div>
+          <div class="health-subtitle">calories/day at rest</div>
+        </div>
+        <div class="health-card">
+          <h5>TDEE</h5>
+          <div id="stats-tdee" class="health-value">--</div>
+          <div class="health-subtitle">total daily expenditure</div>
+        </div>
+        <div class="health-card">
+          <h5>Today's Calories</h5>
+          <div id="stats-calories" class="health-value">--</div>
+          <div class="health-subtitle">consumed so far</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- History Panel -->
+    <div id="history-panel" class="tab-panel hidden">
+      <div id="history-list" class="history-list">
+        <div class="empty-state">No meal history yet. Start planning your meals!</div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

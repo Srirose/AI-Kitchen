@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - AI-Powered Sustainable Nutrition Analyzer</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="dashboard">
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container navbar-content">
+      <a href="dashboard.html" class="navbar-brand">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="#10b981">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        </svg>
+        NutriAI
+      </a>
+      
+      <div class="navbar-user">
+        <div class="user-info">
+          <div id="user-name" class="user-name">Loading...</div>
+          <div id="user-email" class="user-email">...</div>
+        </div>
+        <button id="logout-btn" class="btn btn-secondary btn-sm">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container" style="padding: 2rem 1rem;">
+    <!-- Metrics Grid -->
+    <div class="metrics-grid">
+      <!-- BMI Card -->
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-label">BMI</span>
+          <div class="metric-icon bmi">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+            </svg>
+          </div>
+        </div>
+        <div id="bmi-value" class="metric-value">--</div>
+        <div id="bmi-badge" class="metric-badge normal">Normal</div>
+      </div>
+
+      <!-- BMR Card -->
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-label">BMR</span>
+          <div class="metric-icon bmr">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+            </svg>
+          </div>
+        </div>
+        <div id="bmr-value" class="metric-value">--</div>
+        <div id="bmr-unit" class="metric-unit">kcal/day</div>
+      </div>
+
+      <!-- Calories Card -->
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-label">Today's Calories</span>
+          <div class="metric-icon calories">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </div>
+        </div>
+        <div id="today-calories" class="metric-value">0</div>
+        <div class="progress-container">
+          <div class="progress-bar-bg">
+            <div id="calories-progress" class="progress-bar" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sustainability Card -->
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-label">Sustainability</span>
+          <div class="metric-icon sustainability">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+            </svg>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div id="sustainability-score" class="metric-value">0</div>
+          <span id="sustainability-rating" class="rating-badge rating-c">C</span>
+        </div>
+        <div class="metric-unit">Eco Score</div>
+      </div>
+    </div>
+
+    <!-- Nutrition Details -->
+    <div class="metrics-grid" style="grid-template-columns: repeat(4, 1fr);">
+      <div class="metric-card" style="text-align: center;">
+        <div class="metric-label">Protein</div>
+        <div id="today-protein" class="metric-value" style="font-size: 1.5rem;">0g</div>
+      </div>
+      <div class="metric-card" style="text-align: center;">
+        <div class="metric-label">Carbs</div>
+        <div id="today-carbs" class="metric-value" style="font-size: 1.5rem;">0g</div>
+      </div>
+      <div class="metric-card" style="text-align: center;">
+        <div class="metric-label">Fat</div>
+        <div id="today-fat" class="metric-value" style="font-size: 1.5rem;">0g</div>
+      </div>
+      <div class="metric-card" style="text-align: center;">
+        <div class="metric-label">Fiber</div>
+        <div id="today-fiber" class="metric-value" style="font-size: 1.5rem;">0g</div>
+      </div>
+    </div>
+
+    <!-- Meals Section -->
+    <div class="meals-section">
+      <div class="section-header">
+        <h2 class="section-title">Today's Meals</h2>
+        <button id="add-meal-btn" class="btn btn-primary btn-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Add Meal
+        </button>
+      </div>
+      
+      <div id="meals-list">
+        <p class="empty-message">No meals logged today. Click "Add Meal" to get started!</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Add Meal Modal -->
+  <div id="add-meal-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add Meal</h3>
+        <button class="close-modal">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        <form id="meal-form">
+          <div class="form-group">
+            <label class="form-label">Meal Type</label>
+            <select id="meal-type" class="form-input" required>
+              <option value="breakfast">Breakfast</option>
+              <option value="lunch">Lunch</option>
+              <option value="dinner">Dinner</option>
+              <option value="snacks">Snacks</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <input type="text" id="meal-description" class="form-input" placeholder="e.g., Grilled chicken salad" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Calories (kcal)</label>
+            <input type="number" id="meal-calories" class="form-input" placeholder="0" min="0">
+          </div>
+          
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Protein (g)</label>
+              <input type="number" id="meal-protein" class="form-input" placeholder="0" min="0" step="0.1">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Carbs (g)</label>
+              <input type="number" id="meal-carbs" class="form-input" placeholder="0" min="0" step="0.1">
+            </div>
+          </div>
+          
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Fat (g)</label>
+              <input type="number" id="meal-fat" class="form-input" placeholder="0" min="0" step="0.1">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Fiber (g)</label>
+              <input type="number" id="meal-fiber" class="form-input" placeholder="0" min="0" step="0.1">
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Sustainability Score (0-100)</label>
+            <input type="range" id="meal-sustainability" class="form-input" min="0" max="100" value="50">
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-light);">
+              <span>Low Impact</span>
+              <span>High Impact</span>
+            </div>
+          </div>
+        </form>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn-secondary close-modal">Cancel</button>
+        <button id="save-meal-btn" class="btn btn-primary">Save Meal</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Setup Modal -->
+  <div id="profile-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Complete Your Profile</h3>
+      </div>
+      
+      <div class="modal-body">
+        <form id="profile-form">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" id="profile-name" class="form-input" required>
+          </div>
+          
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Age</label>
+              <input type="number" id="profile-age" class="form-input" placeholder="25" min="1" max="120" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Height (cm)</label>
+              <input type="number" id="profile-height" class="form-input" placeholder="175" min="50" max="300" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Weight (kg)</label>
+              <input type="number" id="profile-weight" class="form-input" placeholder="70" min="20" max="300" step="0.1" required>
+            </div>
+          </div>
+          
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Gender</label>
+              <select id="profile-gender" class="form-input" required>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Activity Level</label>
+              <select id="profile-activity" class="form-input" required>
+                <option value="sedentary">Sedentary</option>
+                <option value="light">Light Active</option>
+                <option value="moderate" selected>Moderate Active</option>
+                <option value="active">Very Active</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Food Allergies</label>
+            <input type="text" id="profile-allergies" class="form-input" placeholder="e.g., peanuts, shellfish">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Health Conditions</label>
+            <input type="text" id="profile-diseases" class="form-input" placeholder="e.g., diabetes, hypertension">
+          </div>
+        </form>
+      </div>
+      
+      <div class="modal-footer">
+        <button id="save-profile-btn" class="btn btn-primary">Save Profile</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initDashboard } from './js/dashboard.js';
+    
+    // Initialize dashboard when DOM is ready
+    document.addEventListener('DOMContentLoaded', initDashboard);
+  </script>
+</body>
+</html>
