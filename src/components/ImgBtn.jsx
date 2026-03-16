@@ -2,161 +2,120 @@ import React, { useRef, useState } from 'react';
 import { ingredientsAPI } from '../utils/api';
 
 const ImgBtn = ({ onImageSelect, disabled, addToast }) => {
-  const cameraInputRef = useRef(null);
-  const uploadInputRef = useRef(null);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const cameraRef = useRef(null);
+  const uploadRef = useRef(null);
+  const [busy, setBusy] = useState(false);
 
-  const processFile = async (file) => {
+  function openCamera() {
+    if (cameraRef.current) {
+      cameraRef.current.value = "";
+      cameraRef.current.click();
+    }
+  }
+
+  function openUpload() {
+    if (uploadRef.current) {
+      uploadRef.current.value = "";
+      uploadRef.current.click();
+    }
+  }
+
+  async function processFile(file) {
     if (!file) return;
-
-    if (!file.type.startsWith('image/')) {
-      addToast('⚠️ Please select an image file', 'warn');
+    if (!file.type.startsWith("image/")) {
+      addToast({ type: "warn", icon: "⚠️", title: "Invalid file",
+                 body: "Please select an image file." });
       return;
     }
 
-    setIsProcessing(true);
-    addToast('🔍 AI scanning ingredients…', 'info');
+    setBusy(true);
+    addToast({ type: "info", icon: "🔍", title: "Scanning image…",
+               body: "AI detecting visible ingredients only." });
 
     try {
-      // Read as base64 for preview
-      const preview = URL.createObjectURL(file);
-
-      // Call backend API for ingredient detection
-      const data = await ingredientsAPI.detectFromImage(file);
-      const ingredients = data.ingredients || [];
-
-      if (ingredients.length === 0) {
-        addToast('🔍 No ingredients found. Try a clearer photo.', 'warn');
-        setIsProcessing(false);
-        return;
-      }
-
-      // Read base64 for potential AI chat use
-      const base64 = await new Promise((resolve) => {
+      const base64 = await new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.onload = (e) => resolve(e.target.result.split(',')[1]);
+        reader.onload  = e => resolve(e.target.result.split(",")[1]);
+        reader.onerror = () => reject(new Error("File read failed"));
         reader.readAsDataURL(file);
       });
 
-      onImageSelect({
-        base64,
-        mimeType: file.type,
-        preview,
-        ingredients
-      });
+      const preview = URL.createObjectURL(file);
+      const data = await ingredientsAPI.detectFromImage(file);
+      const ingredients = data.ingredients || [];
+      
+      onImageSelect({ base64, mimeType: file.type, preview, ingredients });
 
-      addToast(
-        `✅ ${ingredients.length} ingredient${ingredients.length > 1 ? 's' : ''} detected!`,
-        'success'
-      );
-
-    } catch (err) {
-      console.error('Image detection error:', err);
-      addToast(err.message || '⚠️ Detection failed. Try again.', 'error');
+    } catch {
+      addToast({ type: "warn", icon: "⚠️", title: "Failed",
+                 body: "Could not process image. Try again." });
     }
 
-    setIsProcessing(false);
-  };
+    setBusy(false);
+  }
 
-  const handleCameraClick = () => {
-    if (cameraInputRef.current) {
-      cameraInputRef.current.value = '';
-      cameraInputRef.current.click();
-    }
-  };
-
-  const handleUploadClick = () => {
-    if (uploadInputRef.current) {
-      uploadInputRef.current.value = '';
-      uploadInputRef.current.click();
-    }
-  };
-
-  const handleCameraChange = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      processFile(file);
-    }
-    e.target.value = '';
-  };
-
-  const handleUploadChange = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      processFile(file);
-    }
-    e.target.value = '';
-  };
+  const btnStyle = (color = "#4a6280") => ({
+    display: "flex", flexDirection: "column", alignItems: "center",
+    justifyContent: "center", gap: 3,
+    width: 52, height: 52, borderRadius: 12,
+    border: `1.5px solid ${busy ? "#1a3350" : color + "44"}`,
+    background: busy ? "#0d1520" : color + "12",
+    color: busy ? "#4a6280" : color,
+    cursor: busy || disabled ? "not-allowed" : "pointer",
+    fontSize: 20, fontWeight: 700, transition: "all .2s",
+    opacity: busy || disabled ? 0.5 : 1,
+  });
 
   return (
     <div style={{ display: 'flex', gap: '8px' }}>
-      {/* Camera Button */}
-      <button
-        onClick={handleCameraClick}
-        disabled={disabled || isProcessing}
-        title="Take a photo with camera"
-        style={{
-          width: '44px',
-          height: '44px',
-          borderRadius: '10px',
-          border: '1.5px solid #1a3350',
-          background: isProcessing ? '#1a3350' : '#1a335018',
-          color: isProcessing ? '#4a6280' : '#4a6280',
-          cursor: disabled || isProcessing ? 'not-allowed' : 'pointer',
-          fontSize: '18px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}
-      >
-        {isProcessing ? (
-          <div style={{
-            width: '18px',
-            height: '18px',
-            border: '2px solid #818cf8',
-            borderTopColor: 'transparent',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite'
-          }} />
-        ) : '📷'}
-      </button>
+
+      {/* LIVE CAMERA BUTTON */}
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
+        <button onClick={openCamera} disabled={disabled || busy} style={btnStyle("#0ea5e9")}>
+          {busy
+            ? <div style={{ width: 16, height: 16, border: "2px solid #818cf8",
+                            borderTopColor: "transparent", borderRadius: "50%",
+                            animation: "spin 1s linear infinite" }} />
+            : "📷"}
+        </button>
+        <span style={{ fontSize: 8, color: "#4a6280", fontWeight: 700 }}>Camera</span>
+      </div>
+
+      {/* HIDDEN CAMERA INPUT — opens live camera */}
       <input
-        ref={cameraInputRef}
+        ref={cameraRef}
         type="file"
         accept="image/*"
         capture="environment"
-        style={{ display: 'none' }}
-        onChange={handleCameraChange}
+        style={{ display: "none" }}
+        onChange={e => {
+          const f = e.target.files?.[0];
+          if (f) processFile(f);
+          e.target.value = "";
+        }}
       />
 
-      {/* Upload Button */}
-      <button
-        onClick={handleUploadClick}
-        disabled={disabled || isProcessing}
-        title="Upload a food photo"
-        style={{
-          width: '44px',
-          height: '44px',
-          borderRadius: '10px',
-          border: '1.5px solid #1a3350',
-          background: '#1a335018',
-          color: '#4a6280',
-          cursor: disabled || isProcessing ? 'not-allowed' : 'pointer',
-          fontSize: '18px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}
-      >
-        🖼️
-      </button>
+      {/* UPLOAD BUTTON */}
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
+        <button onClick={openUpload} disabled={disabled || busy} style={btnStyle("#818cf8")}>
+          🖼️
+        </button>
+        <span style={{ fontSize: 8, color: "#4a6280", fontWeight: 700 }}>Upload</span>
+      </div>
+
+      {/* HIDDEN UPLOAD INPUT — file picker, no camera */}
       <input
-        ref={uploadInputRef}
+        ref={uploadRef}
         type="file"
         accept="image/*"
-        style={{ display: 'none' }}
-        onChange={handleUploadChange}
+        style={{ display: "none" }}
+        onChange={e => {
+          const f = e.target.files?.[0];
+          if (f) processFile(f);
+          e.target.value = "";
+        }}
       />
+
     </div>
   );
 };

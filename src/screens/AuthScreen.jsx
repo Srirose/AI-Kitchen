@@ -32,7 +32,11 @@ const AuthScreen = ({ onLogin, addToast }) => {
       addToast('Welcome back! 🌿', 'success');
       onLogin({ email: data.user.email, username: data.user.username }, data.hasProfile || false);
     } catch (err) {
-      addToast(err.message, 'error');
+      // Provide clearer error message
+      const errorMessage = err.message.includes('No account found') 
+        ? 'No account found. Please sign up first! 🌱' 
+        : err.message;
+      addToast(errorMessage, 'error');
     }
     
     setIsLoading(false);

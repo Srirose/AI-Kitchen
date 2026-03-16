@@ -24,6 +24,37 @@ const ProfileScreen = ({ currentUser, onComplete, onGoToChat, addToast }) => {
 
   const [metrics, setMetrics] = useState(null);
 
+  // Live health calculations
+  const bmi = (profile.height && profile.weight)
+    ? +(+profile.weight / ((+profile.height / 100) ** 2)).toFixed(1)
+    : null;
+
+  const bmr = (profile.height && profile.weight && profile.age)
+    ? (profile.sex === "Male"
+        ? +(10 * +profile.weight + 6.25 * +profile.height - 5 * +profile.age + 5).toFixed(0)
+        : +(10 * +profile.weight + 6.25 * +profile.height - 5 * +profile.age - 161).toFixed(0))
+    : null;
+
+  const tdee = bmr
+    ? Math.round(bmr * {
+        "Sedentary": 1.2,
+        "Lightly Active": 1.375,
+        "Moderately Active": 1.55,
+        "Very Active": 1.725,
+        "Athlete": 1.9
+      }[profile.activityLevel || "Sedentary"])
+    : null;
+
+  const bmiLabel = b =>
+    b < 18.5 ? "Underweight" :
+    b < 25   ? "Normal" :
+    b < 30   ? "Overweight" : "Obese";
+
+  const bmiColor = b =>
+    b < 18.5 ? "#60a5fa" :
+    b < 25   ? "#4ade80" :
+    b < 30   ? "#fbbf24" : "#f87171";
+
   useEffect(() => {
     const loadProfile = async () => {
       try {
@@ -267,6 +298,101 @@ const ProfileScreen = ({ currentUser, onComplete, onGoToChat, addToast }) => {
               </div>
               <div style={{ fontSize: '12px', color: '#4a6280' }}>BMR (kcal)</div>
             </div>
+          </div>
+        )}
+
+        {/* Live Health Calculations Card */}
+        {bmi && (
+          <div style={{
+            background: "#0d1520",
+            borderRadius: 14,
+            border: "1.5px solid #1a3350",
+            padding: 16,
+            marginTop: 12,
+            marginBottom: 14,
+          }}>
+            <div style={{
+              fontSize: 10, fontWeight: 800, color: "#0ea5e9",
+              textTransform: "uppercase", letterSpacing: 1, marginBottom: 12,
+            }}>
+              📊 Live Health Calculations
+            </div>
+
+            {/* Three metric cards */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 14 }}>
+              {[
+                ["⚖️ BMI",  bmi,        bmiLabel(bmi), bmiColor(bmi)],
+                ["🔥 BMR",  `${bmr}`,   "kcal / day",  "#0ea5e9"],
+                ["⚡ TDEE", `${tdee}`,  "kcal / day",  "#4ade80"],
+              ].map(([title, value, sub, color]) => (
+                <div key={title} style={{
+                  background: "#070d17",
+                  borderRadius: 10,
+                  padding: "10px 8px",
+                  border: `1.5px solid ${color}33`,
+                  textAlign: "center",
+                }}>
+                  <div style={{ fontSize: 8, color: "#4a6280", fontWeight: 800,
+                                textTransform: "uppercase", marginBottom: 4 }}>{title}</div>
+                  <div style={{ fontSize: 18, fontWeight: 900, color: color,
+                                lineHeight: 1 }}>{value}</div>
+                  <div style={{ fontSize: 9, color: sub === bmiLabel(bmi) ? color : "#4a6280",
+                                marginTop: 3, fontWeight: 700 }}>{sub}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* BMI scale bar */}
+            <div style={{ marginBottom: 10 }}>
+              <div style={{ display: "flex", justifyContent: "space-between",
+                            fontSize: 8, color: "#4a6280", marginBottom: 4 }}>
+                <span>0</span><span>18.5</span><span>25</span><span>30</span><span>40+</span>
+              </div>
+              <div style={{ position: "relative", height: 10, borderRadius: 8,
+                            background: "linear-gradient(90deg,#60a5fa 0%,#4ade80 37%,#fbbf24 62%,#f87171 100%)",
+                            overflow: "hidden" }}>
+                {/* marker */}
+                <div style={{
+                  position: "absolute",
+                  left: `${Math.min((bmi / 40) * 100, 100)}%`,
+                  top: 0, bottom: 0,
+                  width: 3, background: "#fff",
+                  borderRadius: 2,
+                  transform: "translateX(-50%)",
+                  boxShadow: "0 0 6px #fff",
+                }} />
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between",
+                            fontSize: 7, color: "#4a6280", marginTop: 3 }}>
+                <span style={{ color: "#60a5fa" }}>Underweight</span>
+                <span style={{ color: "#4ade80" }}>Normal</span>
+                <span style={{ color: "#fbbf24" }}>Overweight</span>
+                <span style={{ color: "#f87171" }}>Obese</span>
+              </div>
+            </div>
+
+            {/* Info notes */}
+            {[
+              "BMI is calculated from your height and weight.",
+              "BMR = calories your body burns completely at rest.",
+              `TDEE = BMR × ${{"Sedentary":1.2,"Lightly Active":1.375,"Moderately Active":1.55,"Very Active":1.725,"Athlete":1.9}[profile.activityLevel || "Sedentary"]} activity multiplier`,
+            ].map((note, i) => (
+              <div key={i} style={{ fontSize: 9, color: "#4a6280", marginBottom: 3,
+                                     display: "flex", gap: 5 }}>
+                <span style={{ color: "#0ea5e9" }}>ℹ️</span>{note}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Hint when fields are empty */}
+        {(!profile.height || !profile.weight) && (
+          <div style={{
+            padding: "10px 14px", borderRadius: 10, marginTop: 10,
+            background: "#0ea5e908", border: "1px dashed #1a3350",
+            color: "#4a6280", fontSize: 11, textAlign: "center",
+          }}>
+            Enter height and weight above to see your BMI, BMR and TDEE
           </div>
         )}
       </div>

@@ -1,82 +1,101 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef } from 'react';
 
 const VoiceBtn = ({ onTranscript, disabled, addToast }) => {
-  const [isRecording, setIsRecording] = useState(false);
-  const recognitionRef = useRef(null);
+  const [rec, setRec] = useState(false);
+  const recRef = useRef(null);
 
-  const startVoice = useCallback(async () => {
-    // Step 1 — Check browser support
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      addToast('🎤 Voice not supported — please use Chrome or Edge', 'warn');
+  async function startVoice() {
+    // Step 1 — browser support check
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+      addToast({
+        type: "warn", icon: "🎤",
+        title: "Voice not supported",
+        body: "Please use Chrome or Edge browser.",
+      });
       return;
     }
 
-    // Step 2 — Request mic permission via getUserMedia FIRST
+    // Step 2 — explicitly request mic permission FIRST
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach(track => track.stop());
+      stream.getTracks().forEach(track => track.stop()); // release immediately
     } catch {
-      addToast('🎤 Microphone access denied. Please allow mic in browser settings.', 'error');
+      addToast({
+        type: "warn", icon: "🎤",
+        title: "Microphone access denied",
+        body: "Tap the 🔒 icon in your browser address bar → allow Microphone → try again.",
+      });
       return;
     }
 
-    // Step 3 — Create recognition instance
-    const recognition = new SpeechRecognition();
-    recognition.continuous = false;
-    recognition.interimResults = false;
-    recognition.lang = 'en-IN';
-
-    // Step 4 — Attach handlers BEFORE calling start()
-    recognition.onstart = () => {
-      setIsRecording(true);
-    };
-
-    recognition.onend = () => {
-      setIsRecording(false);
-      recognitionRef.current = null;
-    };
-
-    recognition.onerror = (event) => {
-      setIsRecording(false);
-      recognitionRef.current = null;
-      
-      if (event.error === 'no-speech') {
-        addToast('No speech detected. Try again.', 'warn');
-      } else if (event.error === 'audio-capture') {
-        addToast('No microphone found. Check your device.', 'error');
-      } else if (event.error === 'not-allowed') {
-        addToast('Microphone permission denied.', 'error');
-      } else if (event.error !== 'aborted') {
-        addToast(`Voice error: ${event.error}`, 'error');
-      }
-    };
-
-    recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      onTranscript(transcript);
-      addToast(`✓ Heard: "${transcript}"`, 'success');
-    };
-
-    // Step 5 — Store ref and start
-    recognitionRef.current = recognition;
-    
+    // Step 3 — setup recognition
     try {
-      recognition.start();
-    } catch {
-      addToast('Failed to start voice recognition', 'error');
-      setIsRecording(false);
-    }
-  }, [onTranscript, addToast]);
+      const r = new SR();
+      r.continuous      = false;
+      r.interimResults  = false;
+      r.lang            = "en-IN";
+      r.maxAlternatives = 1;
 
-  const stopVoice = useCallback(() => {
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
+      // Step 4 — attach ALL handlers BEFORE start()
+      r.onstart = () => setRec(true);
+
+      r.onend = () => {
+        setRec(false);
+        recRef.current = null;
+      };
+
+      r.onerror = ev => {
+        setRec(false);
+        recRef.current = null;
+        const msgs = {
+          "not-allowed":   "Allow microphone in browser settings and try again.",
+          "no-speech":     "No speech detected. Please speak clearly.",
+          "audio-capture": "No microphone found. Connect one and try again.",
+          "network":       "Network error. Check your connection.",
+        };
+        const msg = msgs[ev.error] || `Voice error: ${ev.error}`;
+        if (ev.error !== "aborted") {
+          addToast({
+            type: "warn", icon: "🎤",
+            title: "Voice error",
+            body: msg,
+          });
+        }
+      };
+
+      r.onresult = ev => {
+        const transcript = ev.results[0][0].transcript;
+        onTranscript(transcript);
+        addToast({
+          type: "success", icon: "✅",
+          title: "Heard",
+          body: `"${transcript}"`,
+        });
+      };
+
+      // Step 5 — store ref and start
+      recRef.current = r;
+      r.start();
+
+    } catch {
+      addToast({
+        type: "warn", icon: "🎤",
+        title: "Failed to start",
+        body: "Could not start voice recognition.",
+      });
+      setRec(false);
     }
-  }, []);
+  }
+
+  function stopVoice() {
+    if (recRef.current) {
+      recRef.current.stop();
+    }
+  }
 
   const handleClick = () => {
-    if (isRecording) {
+    if (rec) {
       stopVoice();
     } else {
       startVoice();
@@ -92,7 +111,7 @@ const VoiceBtn = ({ onTranscript, disabled, addToast }) => {
         height: '44px',
         borderRadius: '50%',
         border: 'none',
-        background: isRecording 
+        background: rec 
           ? 'linear-gradient(135deg, #f87171 0%, #dc2626 100%)'
           : 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)',
         cursor: disabled ? 'not-allowed' : 'pointer',
@@ -100,11 +119,11 @@ const VoiceBtn = ({ onTranscript, disabled, addToast }) => {
         alignItems: 'center',
         justifyContent: 'center',
         transition: 'all 0.2s ease',
-        boxShadow: isRecording ? '0 0 20px rgba(248, 113, 113, 0.5)' : 'none',
+        boxShadow: rec ? '0 0 20px rgba(248, 113, 113, 0.5)' : 'none',
         opacity: disabled ? 0.5 : 1
       }}
     >
-      {isRecording ? (
+      {rec ? (
         <div style={{
           display: 'flex',
           alignItems: 'flex-end',
