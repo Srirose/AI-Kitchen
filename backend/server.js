@@ -7,6 +7,8 @@ const profileRoutes = require("./routes/profile");
 const ingredientsRoutes = require("./routes/ingredients");
 const analyzeRoutes = require("./routes/analyze");
 const logsRoutes = require("./routes/logs");
+const statsRoutes = require("./routes/stats");
+const notificationsRoutes = require("./routes/notifications");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -21,6 +23,8 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/ingredients", ingredientsRoutes);
 app.use("/api/analyze", analyzeRoutes);
 app.use("/api/logs", logsRoutes);
+app.use("/api/stats", statsRoutes);
+app.use("/api/notifications", notificationsRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {

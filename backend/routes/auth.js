@@ -26,6 +26,9 @@ router.post("/register", async (req, res) => {
       createdAt: new Date().toISOString(),
     };
 
+    // Persist to file
+    store.persist();
+
     const token = jwt.sign(
       { email, username },
       process.env.JWT_SECRET,
@@ -37,7 +40,8 @@ router.post("/register", async (req, res) => {
       token,
       user: { email, username },
     });
-  } catch {
+  } catch (err) {
+    console.error("Registration error:", err.message);
     res.status(500).json({ error: "Registration failed. Try again." });
   }
 });

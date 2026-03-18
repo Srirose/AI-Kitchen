@@ -60,9 +60,7 @@ const ProfileScreen = ({ currentUser, onComplete, onGoToChat, addToast }) => {
       try {
         const data = await profileAPI.get();
         if (data.profile) {
-          setTimeout(() => {
-            setProfile(prev => ({ ...prev, ...data.profile }));
-          }, 0);
+          setProfile(prev => ({ ...prev, ...data.profile }));
         }
       } catch {
         // Profile not found - user needs to create one
@@ -74,22 +72,12 @@ const ProfileScreen = ({ currentUser, onComplete, onGoToChat, addToast }) => {
   useEffect(() => {
     const { age, height, weight, sex, activityLevel, goal } = profile;
     if (age && height && weight && sex && activityLevel && goal) {
-      const m = calculateAllMetrics({ 
-        age: parseInt(age), 
-        height: parseInt(height), 
-        weight: parseInt(weight), 
-        sex, 
-        activityLevel, 
-        goal 
-      });
-      setTimeout(() => {
-        setMetrics(m);
-      }, 0);
+      const m = calculateAllMetrics({ age, height, weight, sex, activityLevel, goal });
+      setMetrics(m);
     } else {
-      setTimeout(() => {
-        setMetrics(null);
-      }, 0);
+      setMetrics(null);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile.age, profile.height, profile.weight, profile.sex, profile.activityLevel, profile.goal]);
 
   const updateField = (field, value) => {

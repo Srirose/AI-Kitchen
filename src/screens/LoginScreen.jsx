@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Fld, Btn } from '../components';
-import { DB, hasProfile } from '../utils/db';
+import { authAPI } from '../utils/api';
 
 export const LoginScreen = ({ onLogin, addToast }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!username.trim() || !password.trim()) {
@@ -14,24 +15,16 @@ export const LoginScreen = ({ onLogin, addToast }) => {
       return;
     }
 
-    // Auto-register if new user
-    if (!DB.p[username]) {
-      DB.p[username] = { password, createdAt: Date.now() };
-      addToast(`Welcome, ${username}! Create your profile.`, 'success');
-      onLogin(username, false); // No profile yet
-      return;
+    setIsLoading(true);
+    try {
+      const data = await authAPI.login(username, password);
+      addToast(`Welcome back, ${data.user.username}!`, 'success');
+      onLogin({ email: data.user.email, username: data.user.username }, data.hasProfile || false);
+    } catch (err) {
+      addToast(err.message || 'Login failed', 'error');
+    } finally {
+      setIsLoading(false);
     }
-
-    // Check password
-    if (DB.p[username].password !== password) {
-      addToast('Incorrect password', 'error');
-      return;
-    }
-
-    // Check if profile exists
-    const hasProf = hasProfile(username);
-    addToast(`Welcome back, ${username}!`, 'success');
-    onLogin(username, hasProf);
   };
 
   return (
@@ -112,9 +105,11 @@ export const LoginScreen = ({ onLogin, addToast }) => {
           <Btn 
             variant="primary" 
             size="lg" 
+            type="submit"
+            disabled={isLoading}
             style={{ width: '100%', marginTop: '8px' }}
           >
-            Sign In / Register →
+            {isLoading ? 'Signing in...' : 'Sign In →'}
           </Btn>
         </form>
 

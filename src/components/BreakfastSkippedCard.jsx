@@ -29,9 +29,7 @@ const BreakfastSkippedCard = () => {
         color: '#dde6f0',
         fontSize: '13px',
         lineHeight: 1.6,
-        marginBottom: '12px',
-        margin: 0,
-        marginBottom: '12px'
+        margin: '0 0 12px'
       }}>
         Skipping breakfast can lead to:
       </p>

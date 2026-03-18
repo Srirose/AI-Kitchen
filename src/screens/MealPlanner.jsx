@@ -369,7 +369,7 @@ const MealPlanner = ({ currentUser, onAnalyze, onEditProfile, addToast }) => {
             type="text"
             value={customInput}
             onChange={(e) => setCustomInput(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleCustomAdd()}
+            onKeyDown={(e) => e.key === 'Enter' && handleCustomAdd()}
             placeholder="Add custom ingredient..."
             style={{
               flex: 1,

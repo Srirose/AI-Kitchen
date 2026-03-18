@@ -470,7 +470,7 @@ const AnalysisScreen = ({ mealData, onBack, onEditProfile, onLogout, addToast })
                   type="text"
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handlePreDrinkQtySubmit()}
+                  onKeyDown={(e) => e.key === 'Enter' && handlePreDrinkQtySubmit()}
                   placeholder="e.g. 1 cup, 200ml"
                   style={{
                     flex: 1,
@@ -550,7 +550,7 @@ const AnalysisScreen = ({ mealData, onBack, onEditProfile, onLogout, addToast })
                   type="text"
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handlePrevMealWhatSubmit()}
+                  onKeyDown={(e) => e.key === 'Enter' && handlePrevMealWhatSubmit()}
                   placeholder="e.g. Idli, Sambar, Coffee"
                   style={{
                     flex: 1,
@@ -586,7 +586,7 @@ const AnalysisScreen = ({ mealData, onBack, onEditProfile, onLogout, addToast })
                   type="text"
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handlePrevMealQtySubmit()}
+                  onKeyDown={(e) => e.key === 'Enter' && handlePrevMealQtySubmit()}
                   placeholder="e.g. 2 plates, 1 bowl"
                   style={{
                     flex: 1,
@@ -1056,7 +1056,7 @@ const AnalysisScreen = ({ mealData, onBack, onEditProfile, onLogout, addToast })
             type="text"
             value={freeQueryInput}
             onChange={(e) => setFreeQueryInput(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleFreeQuery(freeQueryInput)}
+            onKeyDown={(e) => e.key === 'Enter' && handleFreeQuery(freeQueryInput)}
             placeholder="Ask about nutrients, portions..."
             style={{
               flex: 1,
@@ -1069,32 +1069,8 @@ const AnalysisScreen = ({ mealData, onBack, onEditProfile, onLogout, addToast })
             }}
           />
           
-          {/* Pen/Voice button */}
-          <button
-            onClick={() => {
-              // Could trigger voice or text mode
-            }}
-            style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: '10px',
-              border: 'none',
-              background: '#1a3350',
-              color: '#4a6280',
-              fontSize: '16px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
-              <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
-              <path d="M2 2l7.586 7.586"></path>
-              <circle cx="11" cy="11" r="2"></circle>
-            </svg>
-          </button>
+          {/* Voice button */}
+          <VoiceBtn onTranscript={(t) => setFreeQueryInput(t)} addToast={addToast} />
           
           {/* Camera button */}
           <ImgBtn 

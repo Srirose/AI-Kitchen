@@ -26,6 +26,9 @@ router.post("/", verifyToken, (req, res) => {
     updatedAt: new Date().toISOString(),
   };
 
+  // Persist to file
+  store.persist();
+
   res.json({ message: "Profile saved.", profile: store.profiles[req.user.email] });
 });
 

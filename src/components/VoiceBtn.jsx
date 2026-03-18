@@ -5,39 +5,27 @@ const VoiceBtn = ({ onTranscript, disabled, addToast }) => {
   const recRef = useRef(null);
 
   async function startVoice() {
-    // Step 1 — browser support check
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) {
-      addToast({
-        type: "warn", icon: "🎤",
-        title: "Voice not supported",
-        body: "Please use Chrome or Edge browser.",
-      });
+      addToast('Voice not supported. Use Chrome or Edge.', 'warn');
       return;
     }
 
-    // Step 2 — explicitly request mic permission FIRST
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach(track => track.stop()); // release immediately
+      stream.getTracks().forEach(track => track.stop());
     } catch {
-      addToast({
-        type: "warn", icon: "🎤",
-        title: "Microphone access denied",
-        body: "Tap the 🔒 icon in your browser address bar → allow Microphone → try again.",
-      });
+      addToast('Microphone access denied. Allow mic in browser settings and try again.', 'warn');
       return;
     }
 
-    // Step 3 — setup recognition
     try {
       const r = new SR();
       r.continuous      = false;
       r.interimResults  = false;
-      r.lang            = "en-IN";
+      r.lang            = 'en-IN';
       r.maxAlternatives = 1;
 
-      // Step 4 — attach ALL handlers BEFORE start()
       r.onstart = () => setRec(true);
 
       r.onend = () => {
@@ -49,41 +37,26 @@ const VoiceBtn = ({ onTranscript, disabled, addToast }) => {
         setRec(false);
         recRef.current = null;
         const msgs = {
-          "not-allowed":   "Allow microphone in browser settings and try again.",
-          "no-speech":     "No speech detected. Please speak clearly.",
-          "audio-capture": "No microphone found. Connect one and try again.",
-          "network":       "Network error. Check your connection.",
+          'not-allowed':   'Allow microphone in browser settings and try again.',
+          'no-speech':     'No speech detected. Please speak clearly.',
+          'audio-capture': 'No microphone found. Connect one and try again.',
+          'network':       'Network error. Check your connection.',
         };
-        const msg = msgs[ev.error] || `Voice error: ${ev.error}`;
-        if (ev.error !== "aborted") {
-          addToast({
-            type: "warn", icon: "🎤",
-            title: "Voice error",
-            body: msg,
-          });
+        if (ev.error !== 'aborted') {
+          addToast(msgs[ev.error] || `Voice error: ${ev.error}`, 'warn');
         }
       };
 
       r.onresult = ev => {
         const transcript = ev.results[0][0].transcript;
         onTranscript(transcript);
-        addToast({
-          type: "success", icon: "✅",
-          title: "Heard",
-          body: `"${transcript}"`,
-        });
+        addToast(`🎤 Heard: "${transcript}"`, 'success');
       };
 
-      // Step 5 — store ref and start
       recRef.current = r;
       r.start();
-
     } catch {
-      addToast({
-        type: "warn", icon: "🎤",
-        title: "Failed to start",
-        body: "Could not start voice recognition.",
-      });
+      addToast('Could not start voice recognition.', 'warn');
       setRec(false);
     }
   }

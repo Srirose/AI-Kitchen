@@ -50,9 +50,7 @@ const QuestionCard = ({ step, total, title, question, children, mealColor = '#4a
             color: '#dde6f0',
             fontSize: '14px',
             lineHeight: 1.6,
-            marginBottom: '16px',
-            margin: 0,
-            marginBottom: '16px'
+            margin: '0 0 16px'
           }}>
             {question}
           </p>

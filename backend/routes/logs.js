@@ -17,10 +17,13 @@ router.post("/", verifyToken, (req, res) => {
   store.logs[key].push({
     ...mealPlan,
     nutriData,
-    messages,
+    messages, // Store the entire chat conversation
     timestamp: Date.now(),
     date,
   });
+
+  // Persist to file
+  store.persist();
 
   res.json({ message: "Log saved.", log: store.logs[key] });
 });
